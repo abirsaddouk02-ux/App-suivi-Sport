@@ -41,3 +41,8 @@ Les coches et les charges sont enregistrées dans le navigateur (`localStorage`)
 
 Les exercices, les séries et les répétitions se trouvent dans l'objet `PROGRAM` au début du script de `index.html`.
 
+## Utilisation d'une séance
+
+- Choisis la **date de la séance** en haut de la page (ou touche « Aujourd'hui »). Les dates apparaissent aussi dans l'onglet **Suivi**.
+- Pour chaque série, touche le chiffre de la dernière répétition faite : toutes les répétitions précédentes se valident automatiquement. Un nouveau toucher sur ce même chiffre le retire.
+- Une série est validée dès que tu atteins le bas de la fourchette (10 pour 10-12), et l'exercice est fait quand toutes ses séries sont validées. Le chiffre qui valide la série est entouré en violet.
