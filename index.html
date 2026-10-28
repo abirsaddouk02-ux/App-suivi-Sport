@@ -104,6 +104,19 @@
     background: var(--bg); color: var(--text); font-size: 1rem;
   }
   .hint { font-size: .8rem; color: var(--muted); }
+  .chip.goal:not(.on) { border-color: var(--accent); }
+  .set.ok .setlabel { color: var(--ok); font-weight: 600; }
+  .setlabel small { display: block; font-weight: 400; }
+  .datebar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 10px 0 12px; }
+  .datebar label { display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+  .datebar input {
+    padding: 8px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); font-size: 1rem;
+  }
+  .datebar button {
+    padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); font-size: .9rem; cursor: pointer;
+  }
   .ghost {
     display: block; width: 100%; margin: 6px 0; padding: 12px; border-radius: 10px;
     border: 1px dashed var(--line); background: transparent; color: var(--muted); font-size: .9rem; cursor: pointer;
@@ -153,34 +166,34 @@ const PROGRAM = {
   A: {
     subtitle: "Fessiers et cuisses en priorité",
     exercises: [
-      { id: "hip-thrust", name: "Hip thrust", sets: 4, reps: "8-12", max: 12,
+      { id: "hip-thrust", name: "Hip thrust", sets: 4, reps: "8-12", min: 8, max: 12,
         tip: "Haut du dos appuyé sur un banc, pieds à plat, genoux à 90° en haut du mouvement. Pousse avec les talons et serre les fessiers en haut." },
-      { id: "presse-cuisses", name: "Presse à cuisses", sets: 3, reps: "10-12", max: 12,
+      { id: "presse-cuisses", name: "Presse à cuisses", sets: 3, reps: "10-12", min: 10, max: 12,
         tip: "Dos et bassin collés au siège, pieds écartés à la largeur des épaules, placés assez haut sur la plateforme. Ne verrouille pas les genoux en poussant." },
-      { id: "abduction", name: "Abduction à la machine", sets: 3, reps: "12-15", max: 15,
+      { id: "abduction", name: "Abduction à la machine", sets: 3, reps: "12-15", min: 12, max: 15,
         tip: "Assise bien droite, tu écartes les jambes puis tu reviens lentement, sans laisser les poids se reposer entre les répétitions." },
-      { id: "developpe-pectoraux", name: "Développé machine pectoraux", sets: 2, reps: "10-12", max: 12,
+      { id: "developpe-pectoraux", name: "Développé machine pectoraux", sets: 2, reps: "10-12", min: 10, max: 12,
         tip: "Règle le siège pour que les poignées soient à hauteur de poitrine, omoplates serrées contre le dossier." },
-      { id: "elevations-laterales", name: "Élévations latérales", sets: 3, reps: "12-15", max: 15,
+      { id: "elevations-laterales", name: "Élévations latérales", sets: 3, reps: "12-15", min: 12, max: 15,
         tip: "Coudes légèrement fléchis, tu montes les haltères jusqu'à la hauteur des épaules, sans les balancer." },
-      { id: "planche", name: "Planche", sets: 3, reps: "20-30 s", max: 1, hold: true,
+      { id: "planche", name: "Planche", sets: 3, reps: "20-30 s", min: 1, max: 1, hold: true,
         tip: "Corps aligné de la tête aux talons, ventre et fessiers contractés, sans cambrer le bas du dos. Coche la série quand la tenue est réussie." }
     ]
   },
   B: {
     subtitle: "Fessiers, arrière des cuisses et dos",
     exercises: [
-      { id: "souleve-terre-roumain", name: "Soulevé de terre roumain", sets: 3, reps: "8-10", max: 10,
+      { id: "souleve-terre-roumain", name: "Soulevé de terre roumain", sets: 3, reps: "8-10", min: 8, max: 10,
         tip: "Jambes presque tendues, tu recules le bassin en gardant le dos plat et les haltères proches des cuisses. Descends jusqu'à sentir l'arrière des cuisses s'étirer." },
-      { id: "fentes-split-squat", name: "Fentes marchées ou split squat bulgare", sets: 3, reps: "10", max: 10, perLeg: true,
+      { id: "fentes-split-squat", name: "Fentes marchées ou split squat bulgare", sets: 3, reps: "10", min: 10, max: 10, perLeg: true,
         tip: "Buste droit, genou avant aligné avec le pied. Tu descends en contrôlant le mouvement." },
-      { id: "pont-kickback", name: "Pont fessier à une jambe ou kickback à la poulie", sets: 3, reps: "12", max: 12, perLeg: true,
+      { id: "pont-kickback", name: "Pont fessier à une jambe ou kickback à la poulie", sets: 3, reps: "12", min: 12, max: 12, perLeg: true,
         tip: "Pour le kickback : sangle à la cheville, tu pousses la jambe vers l'arrière en contractant le fessier, sans cambrer le dos." },
-      { id: "tirage-vertical", name: "Tirage vertical", sets: 3, reps: "10-12", max: 12,
+      { id: "tirage-vertical", name: "Tirage vertical", sets: 3, reps: "10-12", min: 10, max: 12,
         tip: "Tu tires la barre vers le haut de la poitrine en rapprochant les omoplates, coudes dirigés vers le bas." },
-      { id: "rowing", name: "Rowing machine", sets: 2, reps: "10-12", max: 12,
+      { id: "rowing", name: "Rowing machine", sets: 2, reps: "10-12", min: 10, max: 12,
         tip: "Buste droit, poitrine contre l'appui, tu tires les poignées vers le ventre en serrant les omoplates." },
-      { id: "crunch-poulie", name: "Crunch à la poulie ou relevés de jambes", sets: 2, reps: "12-15", max: 15,
+      { id: "crunch-poulie", name: "Crunch à la poulie ou relevés de jambes", sets: 2, reps: "12-15", min: 12, max: 15,
         tip: "À genoux, corde derrière la tête : tu enroules le buste vers le bas en contractant les abdos, sans tirer avec les bras. Charge légère." }
     ]
   }
@@ -222,15 +235,33 @@ function weekStartDate(w) {
 function shortDate(d) { return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }); }
 
 /* ---------- Données d'un exercice ---------- */
+/* Une série est un nombre de répétitions faites. Les anciennes sauvegardes (cases à cocher) sont converties. */
+function normSets(d, ex) {
+  const old = Array.isArray(d.sets) ? d.sets : [];
+  d.sets = Array.from({ length: ex.sets }, (_, i) => {
+    const v = old[i];
+    if (Array.isArray(v)) return Math.min(v.filter(Boolean).length, ex.max);
+    return Number.isFinite(v) ? Math.min(Math.max(v, 0), ex.max) : 0;
+  });
+  delete d.done;
+  return d;
+}
 function getEx(w, session, ex) {
   const W = state.weeks[w] || (state.weeks[w] = {});
   const S = W[session] || (W[session] = {});
-  let d = S[ex.id];
-  const len = ex.hold ? 1 : ex.max;
-  if (!d) {
-    d = S[ex.id] = { sets: Array.from({ length: ex.sets }, () => Array(len).fill(false)), done: false, weight: "" };
-  }
-  return d;
+  const d = S[ex.id] || (S[ex.id] = { sets: [], weight: "" });
+  return normSets(d, ex);
+}
+/* Un exercice est fait quand chaque série atteint le minimum de la fourchette (10 pour 10-12). */
+function isDone(d, ex) { return d.sets.every(v => v >= ex.min); }
+function peekDone(w, session, ex) {
+  const d = state.weeks[w]?.[session]?.[ex.id];
+  return !!d && isDone(normSets(d, ex), ex);
+}
+function getSessDate(w, s) { return state.weeks[w]?.dates?.[s] || ""; }
+function setSessDate(w, s, v) {
+  const W = state.weeks[w] || (state.weeks[w] = {});
+  (W.dates || (W.dates = {}))[s] = v;
 }
 function findEx(id) { return ALL_EX.find(e => e.id === id); }
 function prevWeight(ex) {
@@ -250,19 +281,20 @@ let tab = "A";
 
 function card(ex) {
   const d = getEx(week, tab, ex);
+  const done = isDone(d, ex);
   const prev = prevWeight(ex);
-  const sets = d.sets.map((row, si) => `
-    <div class="set">
-      <span class="setlabel">Série ${si + 1}</span>
-      <div class="chips">${row.map((v, ri) => `
-        <button class="chip ${ex.hold ? "holdchip" : ""} ${v ? "on" : ""}" data-act="rep" data-ex="${ex.id}" data-s="${si}" data-r="${ri}" aria-pressed="${v}">${ex.hold ? "Tenue réussie" : ri + 1}</button>`).join("")}
+  const sets = d.sets.map((v, si) => `
+    <div class="set ${v >= ex.min ? "ok" : ""}" data-set="${si}">
+      <span class="setlabel">Série ${si + 1}${ex.hold ? "" : `<small class="count">${v}/${ex.max}</small>`}</span>
+      <div class="chips">${Array.from({ length: ex.max }, (_, ri) => `
+        <button class="chip ${ex.hold ? "holdchip" : ""} ${!ex.hold && ri + 1 === ex.min ? "goal" : ""} ${ri < v ? "on" : ""}" data-act="rep" data-ex="${ex.id}" data-s="${si}" data-r="${ri}" aria-pressed="${ri < v}">${ex.hold ? "Tenue réussie" : ri + 1}</button>`).join("")}
       </div>
     </div>`).join("");
   return `
-  <section class="card ${d.done ? "done" : ""}" id="card-${ex.id}">
+  <section class="card ${done ? "done" : ""}" id="card-${ex.id}">
     <header>
       <label class="donebox">
-        <input type="checkbox" data-act="done" data-ex="${ex.id}" ${d.done ? "checked" : ""}>
+        <input type="checkbox" data-act="done" data-ex="${ex.id}" ${done ? "checked" : ""}>
         <span>${esc(ex.name)}</span>
       </label>
       <span class="scheme">${ex.sets} × ${esc(ex.reps)}${ex.perLeg ? " / jambe" : ""}</span>
@@ -272,6 +304,7 @@ function card(ex) {
       <div class="imgwrap"><img data-base="${ex.id}" data-name="${esc(ex.name)}" alt="${esc(ex.name)}"></div>
       <p class="tip">${esc(ex.tip)}</p>
     </details>
+    <div class="hint">${ex.hold ? "Série validée quand la tenue est réussie" : `Série validée dès ${ex.min} répétitions`}</div>
     ${sets}
     <label class="weight">Charge (kg)
       <input type="number" inputmode="decimal" step="0.5" min="0" value="${esc(d.weight)}" data-act="weight" data-ex="${ex.id}" placeholder="0">
@@ -302,8 +335,7 @@ function wireImages() {
 }
 
 function sessionDoneCount(w, session) {
-  const S = state.weeks[w]?.[session] || {};
-  return PROGRAM[session].exercises.filter(ex => S[ex.id]?.done).length;
+  return PROGRAM[session].exercises.filter(ex => peekDone(w, session, ex)).length;
 }
 function weekDoneCount(w) { return sessionDoneCount(w, "A") + sessionDoneCount(w, "B"); }
 
@@ -321,11 +353,19 @@ function syncCard(ex) {
   const d = getEx(week, tab, ex);
   const el = document.getElementById("card-" + ex.id);
   if (!el) return;
-  el.classList.toggle("done", d.done);
-  el.querySelector('input[data-act="done"]').checked = d.done;
-  el.querySelectorAll(".chip").forEach(c => {
-    c.classList.toggle("on", !!d.sets[+c.dataset.s][+c.dataset.r]);
-    c.setAttribute("aria-pressed", !!d.sets[+c.dataset.s][+c.dataset.r]);
+  const done = isDone(d, ex);
+  el.classList.toggle("done", done);
+  el.querySelector('input[data-act="done"]').checked = done;
+  el.querySelectorAll(".set").forEach(row => {
+    const v = d.sets[+row.dataset.set];
+    row.classList.toggle("ok", v >= ex.min);
+    const c = row.querySelector(".count");
+    if (c) c.textContent = v + "/" + ex.max;
+    row.querySelectorAll(".chip").forEach(ch => {
+      const on = +ch.dataset.r < v;
+      ch.classList.toggle("on", on);
+      ch.setAttribute("aria-pressed", on);
+    });
   });
   syncProgress();
 }
@@ -347,6 +387,10 @@ function renderSuivi() {
     return `<tr><td>${esc(ex.name)}</td>${cells}</tr>`;
   };
   const sep = label => `<tr class="sep"><td colspan="${weeks.length + 1}">${label}</td></tr>`;
+  const dateRow = s => `<tr><td>Séance ${s}</td>${weeks.map(w => {
+    const v = getSessDate(w, s);
+    return `<td>${v ? esc(shortDate(parse(v))) : "–"}</td>`;
+  }).join("")}</tr>`;
   const doneRow = `<tr><td><strong>Exercices faits</strong></td>${weeks.map(w => `<td>${weekDoneCount(w)}/${TOTAL_EX}</td>`).join("")}</tr>`;
   return `
     <p class="sub">Charges notées semaine après semaine. Une flèche verte indique une hausse par rapport à la semaine précédente.</p>
@@ -354,6 +398,7 @@ function renderSuivi() {
       ${head}
       ${sep("Séance A")}${PROGRAM.A.exercises.map(e => rowFor({ ...e, session: "A" })).join("")}
       ${sep("Séance B")}${PROGRAM.B.exercises.map(e => rowFor({ ...e, session: "B" })).join("")}
+      ${sep("Dates des séances")}${dateRow("A")}${dateRow("B")}
       ${sep("Bilan")}${doneRow}
     </table></div>
     <p class="note">Les données restent enregistrées dans ce navigateur, sur cet appareil. Utilise l'export pour faire une sauvegarde ou changer de téléphone.</p>
@@ -376,7 +421,11 @@ function render() {
     app.innerHTML = renderSuivi();
   } else {
     const s = PROGRAM[tab];
-    app.innerHTML = `<p class="sub">${s.subtitle}</p>` +
+    app.innerHTML = `<p class="sub">${s.subtitle}. Touche le chiffre atteint : les répétitions précédentes se valident toutes seules.</p>
+      <div class="datebar">
+        <label>Date de la séance <input type="date" data-act="date" value="${esc(getSessDate(week, tab))}"></label>
+        <button data-act="today">Aujourd'hui</button>
+      </div>` +
       s.exercises.map(e => card({ ...e, session: tab })).join("") +
       `<button class="ghost" data-act="resetsession">Réinitialiser les coches de cette séance</button>`;
     wireImages();
@@ -396,17 +445,21 @@ document.addEventListener("click", e => {
   else if (act === "rep") {
     const ex = { ...findEx(b.dataset.ex), session: tab };
     const d = getEx(week, tab, ex);
-    const s = +b.dataset.s, r = +b.dataset.r;
-    d.sets[s][r] = !d.sets[s][r];
-    d.done = d.sets.every(row => row.every(Boolean));
+    const s = +b.dataset.s, n = +b.dataset.r + 1;
+    d.sets[s] = d.sets[s] === n ? n - 1 : n;
     save(); syncCard(ex);
+  }
+  else if (act === "today") {
+    const v = fmt(new Date());
+    setSessDate(week, tab, v); save();
+    const inp = document.querySelector('input[data-act="date"]');
+    if (inp) inp.value = v;
   }
   else if (act === "resetsession") {
     if (confirm("Effacer les répétitions cochées de cette séance, pour cette semaine ? Les charges sont conservées.")) {
       PROGRAM[tab].exercises.forEach(ex => {
         const d = getEx(week, tab, { ...ex, session: tab });
-        d.sets = d.sets.map(row => row.map(() => false));
-        d.done = false;
+        d.sets = d.sets.map(() => 0);
       });
       save(); render();
     }
@@ -440,9 +493,12 @@ document.addEventListener("change", e => {
   if (t.dataset.act === "done") {
     const ex = { ...findEx(t.dataset.ex), session: tab };
     const d = getEx(week, tab, ex);
-    d.done = t.checked;
-    if (t.checked) d.sets = d.sets.map(row => row.map(() => true));
+    d.sets = d.sets.map(v => t.checked ? Math.max(v, ex.min) : 0);
     save(); syncCard(ex);
+  }
+  else if (t.dataset.act === "date") {
+    setSessDate(week, tab, t.value);
+    save();
   }
 });
 
