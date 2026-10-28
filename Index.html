@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6d28d9">
+<title>Mon suivi muscu</title>
+<style>
+  :root {
+    --bg: #f6f5fb;
+    --card: #ffffff;
+    --text: #1f1b2e;
+    --muted: #6b6880;
+    --accent: #6d28d9;
+    --accent-soft: #ede9fe;
+    --ok: #16a34a;
+    --ok-soft: #dcfce7;
+    --line: #e4e1f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14121c;
+      --card: #1e1b2b;
+      --text: #f0eefa;
+      --muted: #a29fb8;
+      --accent: #a78bfa;
+      --accent-soft: #2d2644;
+      --ok: #4ade80;
+      --ok-soft: #153322;
+      --line: #322e45;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 14px 80px; }
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    padding: 12px 0 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  h1 { font-size: 1.15rem; margin: 0 0 8px; }
+  .weeknav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .weeknav button {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    font-size: 1.1rem; cursor: pointer;
+  }
+  .weeknav button:disabled { opacity: .35; }
+  #weekLabel { font-weight: 600; text-align: center; flex: 1; }
+  #weekLabel small { display: block; font-weight: 400; color: var(--muted); font-size: .78rem; }
+  .tabs { display: flex; gap: 6px; }
+  .tabs button {
+    flex: 1; padding: 10px 4px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+    font-size: .92rem; cursor: pointer;
+  }
+  .tabs button.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .progress { margin-top: 8px; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .progress > div { height: 100%; width: 0; background: var(--ok); transition: width .25s; }
+  #progressText { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+  .sub { color: var(--muted); margin: 14px 0 8px; font-size: .92rem; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 12px; margin-bottom: 12px;
+  }
+  .card.done { border-color: var(--ok); background: linear-gradient(0deg, var(--ok-soft), var(--card) 70%); }
+  .card header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .donebox { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.02rem; cursor: pointer; }
+  .donebox input { width: 22px; height: 22px; accent-color: var(--ok); flex: none; }
+  .scheme {
+    background: var(--accent-soft); color: var(--accent);
+    font-size: .8rem; font-weight: 600; padding: 4px 8px; border-radius: 8px; white-space: nowrap;
+  }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; color: var(--accent); font-size: .88rem; padding: 4px 0; }
+  .imgwrap img { width: 100%; max-height: 320px; object-fit: contain; border-radius: 10px; background: #fff; display: block; margin-top: 6px; }
+  .ph {
+    margin-top: 6px; padding: 18px 12px; border: 2px dashed var(--line); border-radius: 10px;
+    text-align: center; color: var(--muted); font-size: .85rem;
+    display: flex; flex-direction: column; gap: 8px; align-items: center;
+  }
+  .ph a { color: var(--accent); font-weight: 600; }
+  .tip { margin: 8px 0 0; font-size: .88rem; color: var(--muted); }
+  .set { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+  .setlabel { font-size: .8rem; color: var(--muted); width: 54px; flex: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--line); background: transparent; color: var(--text);
+    font-size: .85rem; cursor: pointer; padding: 0;
+  }
+  .chip.on { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 700; }
+  .holdchip { width: auto; border-radius: 18px; padding: 0 14px; }
+  .weight { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: .9rem; }
+  .weight input {
+    width: 100px; padding: 8px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font-size: 1rem;
+  }
+  .hint { font-size: .8rem; color: var(--muted); }
+  .ghost {
+    display: block; width: 100%; margin: 6px 0; padding: 12px; border-radius: 10px;
+    border: 1px dashed var(--line); background: transparent; color: var(--muted); font-size: .9rem; cursor: pointer;
+  }
+  .tablewrap { overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+  th, td { padding: 8px 10px; text-align: center; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child {
+    text-align: left; position: sticky; left: 0; background: var(--card); z-index: 1; min-width: 150px;
+    border-right: 1px solid var(--line);
+  }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.up { color: var(--ok); font-weight: 700; }
+  tr.sep td { background: var(--accent-soft); color: var(--accent); font-weight: 600; text-align: left; }
+  .note { font-size: .82rem; color: var(--muted); margin: 10px 2px; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; }
+  .actions button, .actions label {
+    flex: 1; text-align: center; padding: 12px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); font-size: .9rem; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap" style="padding-bottom:0">
+  <h1>Mon suivi muscu</h1>
+  <div class="weeknav">
+    <button data-act="prevweek" id="prevBtn" aria-label="Semaine précédente">◀</button>
+    <div id="weekLabel">Semaine 1</div>
+    <button data-act="nextweek" aria-label="Semaine suivante">▶</button>
+  </div>
+  <div class="tabs">
+    <button data-act="tab" data-tab="A" id="tabA">Séance A</button>
+    <button data-act="tab" data-tab="B" id="tabB">Séance B</button>
+    <button data-act="tab" data-tab="suivi" id="tabSuivi">Suivi</button>
+  </div>
+  <div id="progressBox">
+    <div class="progress"><div id="progressBar"></div></div>
+    <div id="progressText"></div>
+  </div>
+</div></div>
+
+<main class="wrap" id="app"></main>
+
+<script>
+/* ---------- Programme ---------- */
+const PROGRAM = {
+  A: {
+    subtitle: "Fessiers et cuisses en priorité",
+    exercises: [
+      { id: "hip-thrust", name: "Hip thrust", sets: 4, reps: "8-12", max: 12,
+        tip: "Haut du dos appuyé sur un banc, pieds à plat, genoux à 90° en haut du mouvement. Pousse avec les talons et serre les fessiers en haut." },
+      { id: "presse-cuisses", name: "Presse à cuisses", sets: 3, reps: "10-12", max: 12,
+        tip: "Dos et bassin collés au siège, pieds écartés à la largeur des épaules, placés assez haut sur la plateforme. Ne verrouille pas les genoux en poussant." },
+      { id: "abduction", name: "Abduction à la machine", sets: 3, reps: "12-15", max: 15,
+        tip: "Assise bien droite, tu écartes les jambes puis tu reviens lentement, sans laisser les poids se reposer entre les répétitions." },
+      { id: "developpe-pectoraux", name: "Développé machine pectoraux", sets: 2, reps: "10-12", max: 12,
+        tip: "Règle le siège pour que les poignées soient à hauteur de poitrine, omoplates serrées contre le dossier." },
+      { id: "elevations-laterales", name: "Élévations latérales", sets: 3, reps: "12-15", max: 15,
+        tip: "Coudes légèrement fléchis, tu montes les haltères jusqu'à la hauteur des épaules, sans les balancer." },
+      { id: "planche", name: "Planche", sets: 3, reps: "20-30 s", max: 1, hold: true,
+        tip: "Corps aligné de la tête aux talons, ventre et fessiers contractés, sans cambrer le bas du dos. Coche la série quand la tenue est réussie." }
+    ]
+  },
+  B: {
+    subtitle: "Fessiers, arrière des cuisses et dos",
+    exercises: [
+      { id: "souleve-terre-roumain", name: "Soulevé de terre roumain", sets: 3, reps: "8-10", max: 10,
+        tip: "Jambes presque tendues, tu recules le bassin en gardant le dos plat et les haltères proches des cuisses. Descends jusqu'à sentir l'arrière des cuisses s'étirer." },
+      { id: "fentes-split-squat", name: "Fentes marchées ou split squat bulgare", sets: 3, reps: "10", max: 10, perLeg: true,
+        tip: "Buste droit, genou avant aligné avec le pied. Tu descends en contrôlant le mouvement." },
+      { id: "pont-kickback", name: "Pont fessier à une jambe ou kickback à la poulie", sets: 3, reps: "12", max: 12, perLeg: true,
+        tip: "Pour le kickback : sangle à la cheville, tu pousses la jambe vers l'arrière en contractant le fessier, sans cambrer le dos." },
+      { id: "tirage-vertical", name: "Tirage vertical", sets: 3, reps: "10-12", max: 12,
+        tip: "Tu tires la barre vers le haut de la poitrine en rapprochant les omoplates, coudes dirigés vers le bas." },
+      { id: "rowing", name: "Rowing machine", sets: 2, reps: "10-12", max: 12,
+        tip: "Buste droit, poitrine contre l'appui, tu tires les poignées vers le ventre en serrant les omoplates." },
+      { id: "crunch-poulie", name: "Crunch à la poulie ou relevés de jambes", sets: 2, reps: "12-15", max: 15,
+        tip: "À genoux, corde derrière la tête : tu enroules le buste vers le bas en contractant les abdos, sans tirer avec les bras. Charge légère." }
+    ]
+  }
+};
+const ALL_EX = [...PROGRAM.A.exercises.map(e => ({ ...e, session: "A" })),
+                ...PROGRAM.B.exercises.map(e => ({ ...e, session: "B" }))];
+const TOTAL_EX = ALL_EX.length;
+
+/* ---------- Stockage ---------- */
+const KEY = "muscu-suivi-v1";
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { const s = JSON.parse(raw); if (s && s.weeks && s.start) return s; }
+  } catch (e) {}
+  return { start: fmt(mondayOf(new Date())), weeks: {} };
+}
+let state = load();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+/* ---------- Dates / semaines ---------- */
+function mondayOf(d) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+function fmt(d) {
+  const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+function parse(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
+function curWeek() {
+  const days = Math.round((mondayOf(new Date()) - parse(state.start)) / 864e5);
+  return Math.max(1, Math.floor(days / 7) + 1);
+}
+function weekStartDate(w) {
+  const d = parse(state.start); d.setDate(d.getDate() + (w - 1) * 7); return d;
+}
+function shortDate(d) { return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }); }
+
+/* ---------- Données d'un exercice ---------- */
+function getEx(w, session, ex) {
+  const W = state.weeks[w] || (state.weeks[w] = {});
+  const S = W[session] || (W[session] = {});
+  let d = S[ex.id];
+  const len = ex.hold ? 1 : ex.max;
+  if (!d) {
+    d = S[ex.id] = { sets: Array.from({ length: ex.sets }, () => Array(len).fill(false)), done: false, weight: "" };
+  }
+  return d;
+}
+function findEx(id) { return ALL_EX.find(e => e.id === id); }
+function prevWeight(ex) {
+  for (let w = week - 1; w >= 1; w--) {
+    const v = state.weeks[w]?.[ex.session]?.[ex.id]?.weight;
+    if (v !== undefined && v !== "") return v;
+  }
+  return "";
+}
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/* ---------- Rendu ---------- */
+let week = curWeek();
+let tab = "A";
+
+function card(ex) {
+  const d = getEx(week, tab, ex);
+  const prev = prevWeight(ex);
+  const sets = d.sets.map((row, si) => `
+    <div class="set">
+      <span class="setlabel">Série ${si + 1}</span>
+      <div class="chips">${row.map((v, ri) => `
+        <button class="chip ${ex.hold ? "holdchip" : ""} ${v ? "on" : ""}" data-act="rep" data-ex="${ex.id}" data-s="${si}" data-r="${ri}" aria-pressed="${v}">${ex.hold ? "Tenue réussie" : ri + 1}</button>`).join("")}
+      </div>
+    </div>`).join("");
+  return `
+  <section class="card ${d.done ? "done" : ""}" id="card-${ex.id}">
+    <header>
+      <label class="donebox">
+        <input type="checkbox" data-act="done" data-ex="${ex.id}" ${d.done ? "checked" : ""}>
+        <span>${esc(ex.name)}</span>
+      </label>
+      <span class="scheme">${ex.sets} × ${esc(ex.reps)}${ex.perLeg ? " / jambe" : ""}</span>
+    </header>
+    <details>
+      <summary>Voir l'exécution</summary>
+      <div class="imgwrap"><img data-base="${ex.id}" data-name="${esc(ex.name)}" alt="${esc(ex.name)}"></div>
+      <p class="tip">${esc(ex.tip)}</p>
+    </details>
+    ${sets}
+    <label class="weight">Charge (kg)
+      <input type="number" inputmode="decimal" step="0.5" min="0" value="${esc(d.weight)}" data-act="weight" data-ex="${ex.id}" placeholder="0">
+    </label>
+    ${prev !== "" ? `<div class="hint">Dernière charge notée : ${esc(prev)} kg</div>` : ""}
+  </section>`;
+}
+
+function placeholder(name) {
+  const d = document.createElement("div");
+  d.className = "ph";
+  const q = encodeURIComponent(name + " exercice musculation technique");
+  d.innerHTML = `<span>Image à ajouter dans le dossier <code>images/</code></span>
+    <a target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">Chercher des images</a>`;
+  return d;
+}
+function wireImages() {
+  const exts = ["jpg", "png", "webp", "jpeg", "gif"];
+  document.querySelectorAll("img[data-base]").forEach(img => {
+    let i = 0;
+    img.addEventListener("error", () => {
+      i++;
+      if (i < exts.length) img.src = `images/${img.dataset.base}.${exts[i]}`;
+      else img.replaceWith(placeholder(img.dataset.name));
+    });
+    img.src = `images/${img.dataset.base}.${exts[0]}`;
+  });
+}
+
+function sessionDoneCount(w, session) {
+  const S = state.weeks[w]?.[session] || {};
+  return PROGRAM[session].exercises.filter(ex => S[ex.id]?.done).length;
+}
+function weekDoneCount(w) { return sessionDoneCount(w, "A") + sessionDoneCount(w, "B"); }
+
+function syncProgress() {
+  const box = document.getElementById("progressBox");
+  if (tab === "suivi") { box.style.display = "none"; return; }
+  box.style.display = "";
+  const n = sessionDoneCount(week, tab), t = PROGRAM[tab].exercises.length;
+  document.getElementById("progressBar").style.width = (100 * n / t) + "%";
+  document.getElementById("progressText").textContent =
+    `${n} / ${t} exercices faits` + (n === t ? " — séance terminée, bravo !" : "");
+}
+
+function syncCard(ex) {
+  const d = getEx(week, tab, ex);
+  const el = document.getElementById("card-" + ex.id);
+  if (!el) return;
+  el.classList.toggle("done", d.done);
+  el.querySelector('input[data-act="done"]').checked = d.done;
+  el.querySelectorAll(".chip").forEach(c => {
+    c.classList.toggle("on", !!d.sets[+c.dataset.s][+c.dataset.r]);
+    c.setAttribute("aria-pressed", !!d.sets[+c.dataset.s][+c.dataset.r]);
+  });
+  syncProgress();
+}
+
+function renderSuivi() {
+  const last = Math.max(curWeek(), week, ...Object.keys(state.weeks).map(Number));
+  const weeks = Array.from({ length: last }, (_, i) => i + 1);
+  const head = `<tr><th>Exercice (kg)</th>${weeks.map(w => `<th>S${w}</th>`).join("")}</tr>`;
+  const rowFor = ex => {
+    let prevNum = null;
+    const cells = weeks.map(w => {
+      const v = state.weeks[w]?.[ex.session]?.[ex.id]?.weight;
+      if (v === undefined || v === "") return "<td>–</td>";
+      const n = parseFloat(v);
+      const up = prevNum !== null && n > prevNum;
+      if (!isNaN(n)) prevNum = n;
+      return `<td class="${up ? "up" : ""}">${esc(v)}${up ? " ↑" : ""}</td>`;
+    }).join("");
+    return `<tr><td>${esc(ex.name)}</td>${cells}</tr>`;
+  };
+  const sep = label => `<tr class="sep"><td colspan="${weeks.length + 1}">${label}</td></tr>`;
+  const doneRow = `<tr><td><strong>Exercices faits</strong></td>${weeks.map(w => `<td>${weekDoneCount(w)}/${TOTAL_EX}</td>`).join("")}</tr>`;
+  return `
+    <p class="sub">Charges notées semaine après semaine. Une flèche verte indique une hausse par rapport à la semaine précédente.</p>
+    <div class="tablewrap"><table>
+      ${head}
+      ${sep("Séance A")}${PROGRAM.A.exercises.map(e => rowFor({ ...e, session: "A" })).join("")}
+      ${sep("Séance B")}${PROGRAM.B.exercises.map(e => rowFor({ ...e, session: "B" })).join("")}
+      ${sep("Bilan")}${doneRow}
+    </table></div>
+    <p class="note">Les données restent enregistrées dans ce navigateur, sur cet appareil. Utilise l'export pour faire une sauvegarde ou changer de téléphone.</p>
+    <div class="actions">
+      <button data-act="export">Exporter</button>
+      <label>Importer<input type="file" accept="application/json" id="importFile" hidden></label>
+    </div>`;
+}
+
+function render() {
+  const cw = curWeek();
+  document.getElementById("weekLabel").innerHTML =
+    `Semaine ${week}${week === cw ? " (en cours)" : ""}<small>à partir du ${shortDate(weekStartDate(week))}</small>`;
+  document.getElementById("prevBtn").disabled = week <= 1;
+  ["A", "B", "suivi"].forEach(t => {
+    document.getElementById(t === "suivi" ? "tabSuivi" : "tab" + t).classList.toggle("active", t === tab);
+  });
+  const app = document.getElementById("app");
+  if (tab === "suivi") {
+    app.innerHTML = renderSuivi();
+  } else {
+    const s = PROGRAM[tab];
+    app.innerHTML = `<p class="sub">${s.subtitle}</p>` +
+      s.exercises.map(e => card({ ...e, session: tab })).join("") +
+      `<button class="ghost" data-act="resetsession">Réinitialiser les coches de cette séance</button>`;
+    wireImages();
+  }
+  syncProgress();
+}
+
+/* ---------- Événements ---------- */
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (!b || b.tagName === "INPUT") return;
+  const act = b.dataset.act;
+
+  if (act === "tab") { tab = b.dataset.tab; render(); window.scrollTo(0, 0); }
+  else if (act === "prevweek") { if (week > 1) { week--; render(); } }
+  else if (act === "nextweek") { week++; render(); }
+  else if (act === "rep") {
+    const ex = { ...findEx(b.dataset.ex), session: tab };
+    const d = getEx(week, tab, ex);
+    const s = +b.dataset.s, r = +b.dataset.r;
+    d.sets[s][r] = !d.sets[s][r];
+    d.done = d.sets.every(row => row.every(Boolean));
+    save(); syncCard(ex);
+  }
+  else if (act === "resetsession") {
+    if (confirm("Effacer les répétitions cochées de cette séance, pour cette semaine ? Les charges sont conservées.")) {
+      PROGRAM[tab].exercises.forEach(ex => {
+        const d = getEx(week, tab, { ...ex, session: tab });
+        d.sets = d.sets.map(row => row.map(() => false));
+        d.done = false;
+      });
+      save(); render();
+    }
+  }
+  else if (act === "export") {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "suivi-muscu-" + fmt(new Date()) + ".json";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+});
+
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "importFile" && t.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const s = JSON.parse(reader.result);
+        if (!s.weeks || !s.start) throw new Error("format");
+        if (confirm("Remplacer les données actuelles par celles du fichier ?")) {
+          state = s; save(); week = curWeek(); render();
+        }
+      } catch (err) { alert("Ce fichier n'est pas une sauvegarde valide."); }
+    };
+    reader.readAsText(t.files[0]);
+    return;
+  }
+  if (t.dataset.act === "done") {
+    const ex = { ...findEx(t.dataset.ex), session: tab };
+    const d = getEx(week, tab, ex);
+    d.done = t.checked;
+    if (t.checked) d.sets = d.sets.map(row => row.map(() => true));
+    save(); syncCard(ex);
+  }
+});
+
+document.addEventListener("input", e => {
+  const t = e.target;
+  if (t.dataset.act === "weight") {
+    const ex = { ...findEx(t.dataset.ex), session: tab };
+    getEx(week, tab, ex).weight = t.value;
+    save();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
